@@ -12,8 +12,3 @@ ai-output/
 models/
 outputs/
 .venv/
-
-'/tmp/'
-*.sqlite
-*.db
-.pytest_cache/
