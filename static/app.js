@@ -12,7 +12,7 @@ document.querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>switchView(b.dat
 document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>switchView(b.dataset.goto));
 function openModal(){$("#modal").classList.remove("hidden");$("#newTitle").focus()}
 function closeModal(){$("#modal").classList.add("hidden")}
-["#heroCreate","#topCreate","#projectsCreate","#studioCreate"].forEach(s=>$(s).onclick=openModal));
+["#heroCreate","#topCreate","#projectsCreate","#studioCreate"].forEach(s=>$(s).onclick=openModal);
 $("#modalClose").onclick=closeModal;$("#modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
 $("#createForm").onsubmit=async e=>{e.preventDefault();try{const p=await api("/api/projects",{method:"POST",body:JSON.stringify({title:$("#newTitle").value,topic:$("#newTopic").value})});closeModal();$("#newTitle").value="";$("#newTopic").value="";await loadProjects();await openProject(p.id)}catch(e){toast(e.message)}};
 async function loadProjects(){projects=await api("/api/projects");const scenes=projects.reduce((n,p)=>n+(p.scene_count||0),0);$("#statProjects").textContent=projects.length;$("#statScenes").textContent=scenes;renderProjectList("#recentProjects",projects.slice(0,3));renderProjectList("#allProjects",projects)}
