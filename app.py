@@ -77,7 +77,11 @@ def project_for_user(project_id, user_id):
 
 @app.get("/")
 def home():
-    return render_template("index.html")
+    return send_from_directory(BASE / "frontend-preview", "index.html")
+
+@app.get("/assets/<path:filename>")
+def frontend_assets(filename):
+    return send_from_directory(BASE / "frontend-preview" / "assets", filename)
 
 @app.get("/api/me")
 def me():
