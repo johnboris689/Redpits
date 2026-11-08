@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#09090d">
+<title>RedPit — Your Faceless Content Studio</title>
+<style>
+:root{--ink:#f4f4f8;--muted:#a5a5b4;--line:#292934;--purple:#ff1744;--purple2:#ff526f;--soft:#211018;--bg:#09090d;--green:#22c55e;--shadow:0 22px 65px rgba(0,0,0,.45)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.topbar{height:72px;background:#09090d;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,5vw,72px);position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:-.8px;font-size:22px}.brand-mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#ff526f,#c9002b);display:grid;place-items:center;box-shadow:0 6px 18px #ff174466}.brand-mark svg{width:21px}
+.top-right{display:flex;align-items:center;gap:15px;color:#c6c2d0;font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;background:#302842;color:#fff;display:grid;place-items:center;font-weight:700}
+.shell{max-width:1160px;margin:38px auto 70px;padding:0 22px}.intro{text-align:center;margin:0 auto 28px;max-width:760px}.eyebrow{display:inline-flex;align-items:center;gap:7px;color:var(--purple);background:#efe9ff;border-radius:30px;padding:7px 12px;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase}.intro h1{font-size:clamp(28px,4vw,43px);line-height:1.12;letter-spacing:-1.8px;margin:16px 0 10px}.intro p{color:var(--muted);font-size:15px;line-height:1.65;margin:0}
+.wizard{background:#12121a;border:1px solid #eeecf3;border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.progress-wrap{padding:26px 34px 21px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#fdfcff)}.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px;font-size:12px;color:var(--muted);font-weight:650}.progress-top strong{color:var(--ink)}.progress{height:5px;background:#eeeaf5;border-radius:20px;overflow:hidden}.progress span{display:block;height:100%;width:12.5%;background:linear-gradient(90deg,var(--purple),#b18cff);border-radius:20px;transition:width .25s}
+.steps{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-top:20px}.step-dot{border:0;background:transparent;color:#a29eac;padding:0;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:10px;font-weight:700;min-width:0}.step-dot .num{width:29px;height:29px;border:1px solid #e6e2ed;border-radius:50%;display:grid;place-items:center;background:#12121a;font-size:11px}.step-dot.active{color:var(--purple)}.step-dot.active .num{background:var(--purple);border-color:var(--purple);color:white;box-shadow:0 4px 12px #ff174444}.step-dot.done .num{background:#30121b;border-color:#d9caff;color:var(--purple)}
+.content{padding:34px clamp(20px,5vw,58px) 28px;min-height:510px}.panel{display:none;animation:fade .22s ease}.panel.active{display:block}@keyframes fade{from{opacity:.3;transform:translateY(5px)}to{opacity:1;transform:none}}
+.panel-head{text-align:center;max-width:690px;margin:0 auto 28px}.panel-head .mini{font-size:11px;color:var(--purple);font-weight:850;letter-spacing:1.3px;text-transform:uppercase}.panel-head h2{font-size:clamp(23px,3vw,31px);letter-spacing:-1px;margin:9px 0}.panel-head p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+.field-label{display:flex;justify-content:space-between;gap:12px;font-size:13px;font-weight:750;margin:0 0 10px}.hint{color:#9995a4;font-size:11px;font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.choice{position:relative;text-align:left;border:1px solid var(--line);border-radius:15px;background:#12121a;padding:16px;min-height:112px;transition:.18s;color:var(--ink)}.choice:hover{border-color:#ff526f;transform:translateY(-2px);box-shadow:0 8px 20px #4e2a8910}.choice.selected{border:1.7px solid var(--purple);background:#1b1017;box-shadow:0 0 0 3px #ff174412}.choice .emoji{font-size:25px;display:block;margin-bottom:10px}.choice strong{display:block;font-size:13px}.choice small{display:block;color:var(--muted);font-size:11px;line-height:1.45;margin-top:5px}.check{position:absolute;right:12px;top:12px;width:18px;height:18px;border-radius:50%;border:1px solid #d8d4e0;color:transparent;font-size:11px;display:grid;place-items:center}.selected .check{background:var(--purple);border-color:var(--purple);color:white}
+.input,.select,.textarea{width:100%;border:1px solid #e5e2ec;border-radius:11px;padding:13px 14px;background:#12121a;outline:none;color:var(--ink);font-size:13px}.input:focus,.select:focus,.textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px #ff174414}.textarea{min-height:100px;resize:vertical}.field{margin-top:19px}.field .hint{display:block;margin-top:7px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}.voice-list{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.voice{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:13px;padding:13px;background:#12121a;text-align:left}.voice.selected{border-color:var(--purple);background:#1b1017}.voice-icon{width:38px;height:38px;border-radius:50%;background:#30121b;color:var(--purple);display:grid;place-items:center;font-size:17px}.voice-info{flex:1}.voice-info strong{display:block;font-size:12px}.voice-info small{color:var(--muted);font-size:10px}.play{border:0;background:#28202a;border-radius:50%;width:30px;height:30px;color:var(--purple)}
+.music-row{display:flex;align-items:center;gap:12px;border:1px solid var(--line);padding:13px;border-radius:13px;margin-bottom:10px}.music-art{width:43px;height:43px;border-radius:10px;background:linear-gradient(135deg,#ffd6a7,#f28b9b);display:grid;place-items:center;font-size:19px}.music-row:nth-child(2) .music-art{background:linear-gradient(135deg,#b6e8e0,#6d9fca)}.music-row:nth-child(3) .music-art{background:linear-gradient(135deg,#d8c5ff,#6b4b9c)}.music-meta{flex:1}.music-meta strong{display:block;font-size:12px}.music-meta small{font-size:10px;color:var(--muted)}.music-row input{accent-color:var(--purple)}
+.art-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.art-choice{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#12121a;text-align:left;padding:0}.art-choice.selected{border:2px solid var(--purple);box-shadow:0 0 0 3px #ff174412}.art-img{height:116px;display:grid;place-items:center;font-size:43px;background:radial-gradient(circle at 25% 20%,#ffd8c7,#a38ce9 55%,#31204f)}.art-choice:nth-child(2) .art-img{background:linear-gradient(135deg,#a5d7db,#4b7eaa)}.art-choice:nth-child(3) .art-img{background:linear-gradient(135deg,#ffce8d,#ed779b)}.art-choice:nth-child(4) .art-img{background:linear-gradient(135deg,#c7e6bd,#4d8c77)}.art-choice:nth-child(5) .art-img{background:linear-gradient(135deg,#22243e,#7776a9)}.art-choice:nth-child(6) .art-img{background:linear-gradient(135deg,#e9d7bd,#9e7058)}.art-caption{padding:12px;font-size:12px;font-weight:750}
+.caption-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.caption-choice{border:1px solid var(--line);border-radius:14px;padding:14px;background:#12121a;text-align:left}.caption-choice.selected{border:2px solid var(--purple);background:#1b1017}.caption-preview{height:70px;background:#09090d;border-radius:9px;display:grid;place-items:center;color:white;font-size:12px;font-weight:900;letter-spacing:.3px;text-shadow:1px 2px #000;margin-bottom:10px}.caption-choice:nth-child(2) .caption-preview span{color:#ff4f63}.caption-choice:nth-child(3) .caption-preview span{background:#ffe45b;color:#f4f4f8;padding:3px 5px}.caption-choice strong{font-size:12px}
+.platforms{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.platform{border:1px solid var(--line);border-radius:14px;padding:17px;display:flex;align-items:center;gap:13px}.platform-icon{width:42px;height:42px;border-radius:12px;background:#f1eff5;display:grid;place-items:center;font-size:21px}.platform-info{flex:1}.platform-info strong{display:block;font-size:13px}.platform-info small{color:var(--muted);font-size:10px}.connect{border:1px solid #ddd8e8;background:#12121a;border-radius:9px;padding:8px 11px;font-size:11px;font-weight:750}.connect.connected{background:#eaf8f3;border-color:#c5ebdd;color:var(--green)}
+.schedule-card{background:#1b1017;border:1px solid #e9e0ff;border-radius:16px;padding:19px}.time-input{font-size:25px;font-weight:800;letter-spacing:-1px;max-width:190px}.days{display:flex;flex-wrap:wrap;gap:8px}.day{border:1px solid var(--line);background:#12121a;border-radius:9px;padding:9px 12px;font-size:11px;font-weight:700}.day.active{background:var(--purple);border-color:var(--purple);color:white}.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);font-size:12px}.switch{appearance:none;width:39px;height:22px;background:#d8d5df;border-radius:20px;position:relative;cursor:pointer;transition:.2s}.switch:checked{background:var(--purple)}.switch:before{content:"";position:absolute;width:16px;height:16px;top:3px;left:3px;background:#12121a;border-radius:50%;transition:.2s}.switch:checked:before{left:20px}
+.footer{border-top:1px solid var(--line);padding:20px clamp(20px,5vw,58px);display:flex;align-items:center;justify-content:space-between;gap:14px;background:#101017}.footer-note{font-size:11px;color:var(--muted)}.actions{display:flex;gap:10px}.btn{border:0;border-radius:11px;padding:12px 20px;font-size:12px;font-weight:800}.btn-primary{background:linear-gradient(135deg,var(--purple),#8d56ff);color:#fff;box-shadow:0 7px 18px #ff174435}.btn-primary:hover{filter:brightness(1.06);transform:translateY(-1px)}.btn-secondary{background:#12121a;border:1px solid var(--line);color:#555163}.btn:disabled{opacity:.4;cursor:not-allowed}
+.summary{background:#faf9fc;border:1px solid var(--line);border-radius:14px;padding:17px;font-size:12px;line-height:1.8;color:#625e70}.summary b{color:var(--ink)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);background:#09090d;color:#fff;padding:12px 18px;border-radius:12px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:40}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:760px){.topbar{height:62px;padding:0 17px}.top-right .hide-mobile{display:none}.shell{margin:25px auto 40px;padding:0 12px}.intro{margin-bottom:20px}.wizard{border-radius:18px}.progress-wrap{padding:19px 16px 15px}.steps{gap:2px}.step-dot{font-size:8px}.step-dot .num{width:26px;height:26px}.step-dot .step-name{max-width:42px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.content{padding:26px 16px;min-height:520px}.grid,.art-grid,.caption-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.choice{min-height:104px;padding:13px}.art-img{height:95px}.voice-list,.platforms,.two-col{grid-template-columns:1fr}.footer{padding:16px;align-items:stretch;flex-direction:column}.footer-note{text-align:center}.actions{width:100%}.actions .btn{flex:1}.panel-head{margin-bottom:22px}}
+@media(max-width:390px){.step-dot .step-name{display:none}.steps{margin-top:15px}.grid{gap:9px}.choice small{font-size:10px}.content{padding:22px 12px}.brand{font-size:19px}}
+
+/* RedPit signature visual system */
+body{background:radial-gradient(ellipse at 78% 8%,rgba(255,23,68,.12),transparent 32%),#09090d;color:#f4f4f8}
+.topbar{background:rgba(9,9,13,.92);backdrop-filter:blur(18px);border-bottom:1px solid #292934}
+.brand-mark{background:linear-gradient(135deg,#ff526f,#c9002b);box-shadow:0 0 26px #ff174455}
+.shell{max-width:1240px}
+.intro{text-align:left;max-width:100%;padding:24px 26px 22px;border:1px solid #292934;border-radius:22px;background:linear-gradient(110deg,rgba(255,23,68,.12),rgba(18,18,26,.92) 48%,rgba(18,18,26,.7));position:relative;overflow:hidden}
+.intro:after{content:"";position:absolute;right:-5%;top:-65%;width:44%;height:230%;background:radial-gradient(ellipse,rgba(255,23,68,.2),transparent 65%);pointer-events:none;animation:glowPulse 6s ease-in-out infinite}
+.intro h1{max-width:650px;font-size:clamp(29px,4vw,46px);color:#fff}
+.intro p{max-width:650px;color:#b6b6c3}
+.eyebrow{color:#ff6b85;background:#35101c;border:1px solid #612032}
+.wizard{background:#111119;border:1px solid #2b2b37;box-shadow:0 28px 90px #0009}
+.progress-wrap{background:linear-gradient(180deg,#171720,#111119);border-color:#292934}
+.progress{background:#292934}.progress span{background:linear-gradient(90deg,#ff1744,#ff7890);box-shadow:0 0 16px #ff174477}
+.step-dot .num{background:#15151e;border-color:#363642;color:#aaa}
+.step-dot.active .num{background:#ff1744;border-color:#ff1744;box-shadow:0 0 20px #ff174466}
+.step-dot.done .num{background:#35101c;border-color:#692035;color:#ff7890}
+.content{background:linear-gradient(180deg,#111119,#101017)}
+.panel-head h2{color:#fff}.panel-head p{color:#aaaab8}.panel-head .mini{color:#ff6b85}
+.choice,.voice,.music-row,.art-choice,.caption-choice,.platform,.schedule-card{background:#15151e;border-color:#30303d;color:#f4f4f8}
+.choice:hover{border-color:#ff526f;box-shadow:0 10px 28px #ff174414}
+.choice.selected,.voice.selected,.caption-choice.selected,.art-choice.selected{border-color:#ff1744;background:#211018;box-shadow:0 0 0 3px #ff174422,0 10px 28px #0005}
+.choice small,.voice-info small,.music-meta small,.platform-info small{color:#a5a5b4}
+.check{border-color:#555}.selected .check{background:#ff1744;border-color:#ff1744}
+.input,.select,.textarea{background:#0d0d14;border-color:#353541;color:#f4f4f8}
+.input::placeholder,.textarea::placeholder{color:#777784}
+.input:focus,.select:focus,.textarea:focus{border-color:#ff526f;box-shadow:0 0 0 3px #ff174422}
+.voice-icon{background:#35101c;color:#ff7189}
+.play{background:#30121b;color:#ff7189}
+.music-art{filter:saturate(.85)}
+.caption-preview{background:linear-gradient(135deg,#242430,#08080d)}
+.platform-icon{background:#252530}
+.connect{background:#1c1c27;border-color:#3a3a48;color:#f4f4f8}
+.connect.connected{background:#10281f;border-color:#205f43;color:#69e2a2}
+.schedule-card{background:linear-gradient(135deg,#211018,#15151e);border-color:#612032}
+.day{background:#171720;border-color:#363642;color:#ddd}
+.day.active{background:#ff1744;border-color:#ff1744;color:#fff}
+.footer{background:#0e0e15;border-color:#292934}
+.footer-note{color:#a5a5b4}
+.btn-primary{background:linear-gradient(135deg,#ff1744,#c9002b);box-shadow:0 8px 24px #ff174444}
+.btn-secondary{background:#1b1b26;color:#eee;border:1px solid #353541}
+.art-img{filter:saturate(.82) brightness(.82)}
+.art-caption{color:#eee}
+.avatar{background:#35101c;color:#fff}
+@keyframes glowPulse{0%,100%{opacity:.55;transform:scale(.95)}50%{opacity:1;transform:scale(1.08)}}
+@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.wizard{animation:floatUp 9s ease-in-out infinite}
+.choice,.voice,.platform,.art-choice,.caption-choice{transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.choice:active,.voice:active,.platform:active{transform:scale(.985)}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+
+
+.hero-strip{height:clamp(150px,25vw,260px);margin:-8px 0 24px;border:1px solid #30202a;border-radius:22px;overflow:hidden;position:relative;background:#100a10;box-shadow:0 18px 55px #0008}
+.hero-strip>img{width:100%;height:100%;object-fit:cover;object-position:center 42%;display:block;opacity:.78;animation:heroDrift 24s ease-in-out infinite alternate}
+.hero-strip:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,8,13,.96) 0%,rgba(8,8,13,.72) 40%,rgba(8,8,13,.06) 100%)}
+.hero-overlay{position:absolute;z-index:1;left:clamp(18px,4vw,42px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;max-width:460px}
+.hero-kicker{font-size:9px;letter-spacing:1.8px;color:#ff8297;font-weight:900}
+.hero-overlay strong{font-size:clamp(23px,4vw,38px);line-height:1.02;letter-spacing:-1.2px;color:#fff}
+.hero-overlay strong em{font-style:normal;color:#ff345d}
+.hero-sub{font-size:12px;color:#d0cbd0}
+.hero-live{position:absolute;z-index:2;right:18px;bottom:16px;padding:8px 11px;border:1px solid #ffffff33;border-radius:30px;background:#08080d99;color:#fff;font-size:9px;letter-spacing:1px;backdrop-filter:blur(10px)}
+.hero-live i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff1744;margin-right:6px;box-shadow:0 0 10px #ff1744;animation:liveBlink 1.5s infinite}
+@keyframes liveBlink{50%{opacity:.3}}@keyframes heroDrift{from{transform:scale(1)}to{transform:scale(1.07)}}
+@media(max-width:600px){.intro{padding:20px 17px}.hero-strip{height:180px;margin-bottom:16px}.hero-overlay{max-width:75%}.hero-sub{font-size:10px}.hero-live{right:10px;bottom:10px}}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18V6l14 12V6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>RedPit</div>
+  <div class="top-right"><span class="hide-mobile">Your faceless content studio</span><span class="avatar">U</span></div>
+</header>
+<main class="shell">
+  <section class="intro">
+    <span class="eyebrow">✦ YOUR CREATOR JOURNEY STARTS HERE</span>
+    <h1>Build your next content series.</h1>
+    <p>Set up your creative style once. RedPit will help you turn your ideas into a consistent stream of videos.</p>
+  </section>
+
+    <div class="hero-strip" aria-label="RedPit creative studio preview">
+      <img src="{{ url_for('static', filename='redpit-hero.png') }}" alt="Cinematic RedPit creator studio artwork">
+      <div class="hero-overlay">
+        <span class="hero-kicker">YOUR IDEAS. YOUR CHANNELS. YOUR SCHEDULE.</span>
+        <strong>Make every story<br><em>worth watching.</em></strong>
+        <span class="hero-sub">Build a repeatable faceless video workflow with RedPit.</span>
+      </div>
+      <span class="hero-live"><i></i> CREATOR STUDIO</span>
+    </div>
+  <section class="wizard">
+    <div class="progress-wrap">
+      <div class="progress-top"><span id="stepLabel">STEP 1 OF 8 · YOUR NICHE</span><strong id="percent">12% complete</strong></div>
+      <div class="progress"><span id="bar"></span></div>
+      <div class="steps" id="steps">
+        <button class="step-dot active" data-step="0"><span class="num">1</span><span class="step-name">Niche</span></button>
+        <button class="step-dot" data-step="1"><span class="num">2</span><span class="step-name">Voice</span></button>
+        <button class="step-dot" data-step="2"><span class="num">3</span><span class="step-name">Music</span></button>
+        <button class="step-dot" data-step="3"><span class="num">4</span><span class="step-name">Art style</span></button>
+        <button class="step-dot" data-step="4"><span class="num">5</span><span class="step-name">Captions</span></button>
+        <button class="step-dot" data-step="5"><span class="num">6</span><span class="step-name">Video</span></button>
+        <button class="step-dot" data-step="6"><span class="num">7</span><span class="step-name">Accounts</span></button>
+        <button class="step-dot" data-step="7"><span class="num">8</span><span class="step-name">Schedule</span></button>
+      </div>
+    </div>
+    <div class="content">
+      <section class="panel active" data-panel="0">
+        <div class="panel-head"><span class="mini">01 / Content direction</span><h2>What will your series be about?</h2><p>Choose a niche to shape your scripts, visuals and storytelling. You can also create your own.</p></div>
+        <div class="field-label">Choose your niche <span class="hint">Select one</span></div>
+        <div class="grid single">
+          <button class="choice selected"><span class="check">✓</span><span class="emoji">🧠</span><strong>Stoic motivation</strong><small>Wisdom, discipline and mindset</small></button>
+          <button class="choice"><span class="check">✓</span><span class="emoji">💛</span><strong>Good morals</strong><small>Life lessons and meaningful stories</small></button>
+          <button class="choice"><span class="check">✓</span><span class="emoji">🧸</span><strong>Children's stories</strong><small>Imaginative, family-friendly tales</small></button>
+          <button class="choice"><span class="check">✓</span><span class="emoji">🏛️</span><strong>History</strong><small>People, events and forgotten facts</small></button>
+          <button class="choice"><span class="check">✓</span><span class="emoji">👻</span><strong>Scary stories</strong><small>Horror, mysteries and suspense</small></button>
+          <button class="choice"><span class="check">✓</span><span class="emoji">📚</span><strong>Storytelling</strong><small>Original stories and plot twists</small></button>
+        </div>
+        <div class="field"><div class="field-label">Create a custom niche <span class="hint">Optional</span></div><input class="input" id="customNiche" placeholder="e.g. African legends, business stories, space facts..."></div>
+        <div class="field"><div class="field-label">Example script or creative direction <span class="hint">Optional</span></div><textarea class="textarea" placeholder="Paste a sample script or describe the kind of content you want RedPit to create..."></textarea></div>
+      </section>
+      <section class="panel" data-panel="1">
+        <div class="panel-head"><span class="mini">02 / Audio identity</span><h2>Choose your voice.</h2><p>Pick the language, narrator and delivery that fit your audience. Preview controls are included in this visual prototype.</p></div>
+        <div class="two-col">
+          <div><div class="field-label">Language</div><select class="select"><option>English (United States)</option><option>English (United Kingdom)</option><option>English (Nigeria)</option><option>French</option><option>Spanish</option><option>Portuguese</option><option>Hindi</option></select></div>
+          <div><div class="field-label">Voice gender</div><select class="select"><option>Any voice</option><option>Female</option><option>Male</option></select></div>
+        </div>
+        <div class="field-label" style="margin-top:22px">Choose a narrator <span class="hint">Tap to select</span></div>
+        <div class="voice-list">
+          <button class="voice selected"><span class="voice-icon">♀</span><span class="voice-info"><strong>Olivia · Warm storyteller</strong><small>Natural · expressive · female</small></span><span class="play">▶</span></button>
+          <button class="voice"><span class="voice-icon">♂</span><span class="voice-info"><strong>Marcus · Deep narrator</strong><small>Confident · cinematic · male</small></span><span class="play">▶</span></button>
+          <button class="voice"><span class="voice-icon">♀</span><span class="voice-info"><strong>Amara · Bright and clear</strong><small>Friendly · energetic · female</small></span><span class="play">▶</span></button>
+          <button class="voice"><span class="voice-icon">♂</span><span class="voice-info"><strong>James · Calm and steady</strong><small>Relaxed · conversational · male</small></span><span class="play">▶</span></button>
+        </div>
+        <div class="field"><div class="field-label">Speaking style</div><div class="grid">
+          <button class="choice selected"><span class="check">✓</span><span class="emoji">📖</span><strong>Storyteller</strong></button><button class="choice"><span class="check">✓</span><span class="emoji">🎙️</span><strong>Confident</strong></button><button class="choice"><span class="check">✓</span><span class="emoji">⚡</span><strong>Energetic</strong></button>
+        </div></div>
+      </section>
+      <section class="panel" data-panel="2">
+        <div class="panel-head"><span class="mini">03 / Soundtrack</span><h2>Set the mood with music.</h2><p>Choose a background track that supports your story. You can keep videos voice-only or add your own music.</p></div>
+        <div class="field-label">Background music <span class="hint">Choose one track</span></div>
+        <label class="music-row"><span class="music-art">🎹</span><span class="music-meta"><strong>Emotional cinematic</strong><small>Atmospheric · 02:18</small></span><input type="radio" name="music" checked></label>
+        <label class="music-row"><span class="music-art">🌊</span><span class="music-meta"><strong>Peaceful ambient</strong><small>Soft · 03:04</small></span><input type="radio" name="music"></label>
+        <label class="music-row"><span class="music-art">🥁</span><span class="music-meta"><strong>Dark suspense</strong><small>Mysterious · 01:56</small></span><input type="radio" name="music"></label>
+        <label class="music-row"><span class="music-art">🎧</span><span class="music-meta"><strong>No background music</strong><small>Keep the narration clean</small></span><input type="radio" name="music"></label>
+        <div class="field"><div class="field-label">Upload your own track <span class="hint">MP3, WAV</span></div><input class="input" type="file" accept="audio/*"></div>
+      </section>
+      <section class="panel" data-panel="3">
+        <div class="panel-head"><span class="mini">04 / Visual identity</span><h2>Choose your art style.</h2><p>Set the visual direction for the images and scenes in your videos.</p></div>
+        <div class="art-grid">
+          <button class="art-choice selected"><div class="art-img">🎨</div><div class="art-caption">Modern cartoon</div></button>
+          <button class="art-choice"><div class="art-img">🌆</div><div class="art-caption">Cinematic realism</div></button>
+          <button class="art-choice"><div class="art-img">🪄</div><div class="art-caption">Whimsical 3D</div></button>
+          <button class="art-choice"><div class="art-img">🌿</div><div class="art-caption">Storybook</div></button>
+          <button class="art-choice"><div class="art-img">🌌</div><div class="art-caption">Dark fantasy</div></button>
+          <button class="art-choice"><div class="art-img">🖼️</div><div class="art-caption">Classic illustration</div></button>
+        </div>
+        <div class="field"><div class="field-label">Visual detail</div><select class="select"><option>High detail</option><option>Balanced</option><option>Simple and clean</option></select></div>
+      </section>
+      <section class="panel" data-panel="4">
+        <div class="panel-head"><span class="mini">05 / On-screen text</span><h2>Make your captions stand out.</h2><p>Choose a subtitle style that stays readable and matches your content personality.</p></div>
+        <div class="caption-grid">
+          <button class="caption-choice selected"><div class="caption-preview"><span>YOUR STORY BEGINS</span></div><strong>Bold stroke</strong></button>
+          <button class="caption-choice"><div class="caption-preview"><span>YOUR STORY BEGINS</span></div><strong>Red highlight</strong></button>
+          <button class="caption-choice"><div class="caption-preview"><span>YOUR STORY BEGINS</span></div><strong>Karaoke</strong></button>
+          <button class="caption-choice"><div class="caption-preview"><span>YOUR STORY BEGINS</span></div><strong>Sleek</strong></button>
+          <button class="caption-choice"><div class="caption-preview"><span>YOUR STORY BEGINS</span></div><strong>Majestic</strong></button>
+          <button class="caption-choice"><div class="caption-preview"><span>YOUR STORY BEGINS</span></div><strong>Beast</strong></button>
+        </div>
+        <div class="two-col field"><div><div class="field-label">Caption position</div><select class="select"><option>Lower third</option><option>Center</option><option>Upper third</option></select></div><div><div class="field-label">Caption size</div><select class="select"><option>Large</option><option>Medium</option><option>Extra large</option></select></div></div>
+      </section>
+      <section class="panel" data-panel="5">
+        <div class="panel-head"><span class="mini">06 / Video preferences</span><h2>Fine-tune your videos.</h2><p>Choose the format and production preferences for your content series.</p></div>
+        <div class="two-col">
+          <div><div class="field-label">Video format</div><select class="select"><option>Portrait · 9:16 (TikTok / Reels / Shorts)</option><option>Landscape · 16:9</option><option>Square · 1:1</option></select></div>
+          <div><div class="field-label">Video duration</div><select class="select"><option>30–60 seconds</option><option>60–90 seconds</option><option>2–3 minutes</option><option>3–5 minutes</option></select></div>
+          <div><div class="field-label">Scene pace</div><select class="select"><option>Dynamic</option><option>Balanced</option><option>Slow cinematic</option></select></div>
+          <div><div class="field-label">Content rating</div><select class="select"><option>General audience</option><option>Teen audience</option><option>Mature themes</option></select></div>
+        </div>
+        <div class="field">
+          <div class="toggle-row"><span><b>Auto-generate subtitles</b><br><span class="hint">Create captions from narration</span></span><input class="switch" type="checkbox" checked></div>
+          <div class="toggle-row"><span><b>Use monetization-friendly settings</b><br><span class="hint">Avoid avoidable copyright and reuse risks</span></span><input class="switch" type="checkbox" checked></div>
+          <div class="toggle-row"><span><b>Review videos before publishing</b><br><span class="hint">Keep each video pending your approval</span></span><input class="switch" type="checkbox" checked></div>
+        </div>
+      </section>
+      <section class="panel" data-panel="6">
+        <div class="panel-head"><span class="mini">07 / Social channels</span><h2>Where should your videos go?</h2><p>Connect the accounts you own. In the live product, each connection will use the platform's official authorization flow.</p></div>
+        <div class="platforms">
+          <div class="platform"><span class="platform-icon">▶️</span><span class="platform-info"><strong>YouTube</strong><small>Shorts and channel uploads</small></span><button class="connect">Connect</button></div>
+          <div class="platform"><span class="platform-icon">♪</span><span class="platform-info"><strong>TikTok</strong><small>Publish vertical videos</small></span><button class="connect">Connect</button></div>
+          <div class="platform"><span class="platform-icon">◎</span><span class="platform-info"><strong>Instagram</strong><small>Reels publishing</small></span><button class="connect">Connect</button></div>
+          <div class="platform"><span class="platform-icon">f</span><span class="platform-info"><strong>Facebook</strong><small>Pages and video publishing</small></span><button class="connect">Connect</button></div>
+        </div>
+        <div class="field"><div class="summary">🔒 <b>Your accounts stay yours.</b> RedPit will request only the permissions needed to publish on your behalf. This preview does not connect to social networks.</div></div>
+      </section>
+      <section class="panel" data-panel="7">
+        <div class="panel-head"><span class="mini">08 / Series launch</span><h2>Name your series and set your schedule.</h2><p>Choose when RedPit should prepare and publish your content. You can adjust this schedule later.</p></div>
+        <div class="two-col">
+          <div><div class="field-label">Series name</div><input class="input" id="seriesName" value="My first content series" placeholder="e.g. Daily Stoic Wisdom"></div>
+          <div><div class="field-label">Timezone</div><select class="select"><option>Africa/Lagos (WAT, UTC+1)</option><option>UTC</option><option>Europe/London</option><option>America/New_York</option></select></div>
+        </div>
+        <div class="schedule-card field">
+          <div class="field-label">Daily publishing time <span class="hint">Your local time</span></div>
+          <input class="input time-input" type="time" value="20:00">
+          <div class="field-label" style="margin-top:20px">Publishing days</div>
+          <div class="days"><button class="day active">Mon</button><button class="day active">Tue</button><button class="day active">Wed</button><button class="day active">Thu</button><button class="day active">Fri</button><button class="day active">Sat</button><button class="day active">Sun</button></div>
+        </div>
+        <div class="field">
+          <div class="toggle-row"><span><b>Prepare videos ahead of publishing</b><br><span class="hint">Generate content before the scheduled time</span></span><input class="switch" type="checkbox" checked></div>
+          <div class="toggle-row"><span><b>Require my approval</b><br><span class="hint">Review videos before they go live</span></span><input class="switch" type="checkbox" checked></div>
+        </div>
+        <div class="field"><div class="field-label">Your setup summary</div><div class="summary" id="summary">Your series is almost ready. Review your choices and create your series.</div></div>
+      </section>
+    </div>
+    <footer class="footer">
+      <span class="footer-note" id="footerNote">You can change these preferences later.</span>
+      <div class="actions"><button class="btn btn-secondary" id="back" disabled>← Back</button><button class="btn btn-primary" id="next">Continue →</button></div>
+    </footer>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const panels=[...document.querySelectorAll('.panel')],dots=[...document.querySelectorAll('.step-dot')];
+const names=['YOUR NICHE','YOUR VOICE','BACKGROUND MUSIC','ART STYLE','CAPTION STYLE','VIDEO SETTINGS','SOCIAL ACCOUNTS','SERIES SCHEDULE'];
+let current=0;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function showStep(n){current=Math.max(0,Math.min(7,n));panels.forEach((p,i)=>p.classList.toggle('active',i===current));dots.forEach((d,i)=>{d.classList.toggle('active',i===current);d.classList.toggle('done',i<current);d.querySelector('.num').textContent=i<current?'✓':i+1});document.getElementById('bar').style.width=((current+1)/8*100)+'%';document.getElementById('percent').textContent=Math.round((current+1)/8*100)+'% complete';document.getElementById('stepLabel').textContent=`STEP ${current+1} OF 8 · ${names[current]}`;document.getElementById('back').disabled=current===0;document.getElementById('next').textContent=current===7?'Create series ✓':'Continue →';document.getElementById('footerNote').textContent=current===7?'Your series settings are ready to review.':'You can change these preferences later.';if(current===7)makeSummary();window.scrollTo({top:0,behavior:'smooth'})}
+document.getElementById('next').addEventListener('click',()=>{if(current<7)showStep(current+1);else toast('Preview complete — publishing and account connections are demo-only.')});
+document.getElementById('back').addEventListener('click',()=>showStep(current-1));
+dots.forEach(d=>d.addEventListener('click',()=>showStep(+d.dataset.step)));
+document.querySelectorAll('.grid.single .choice,.field .grid .choice').forEach(c=>c.addEventListener('click',()=>{c.parentElement.querySelectorAll('.choice').forEach(x=>x.classList.remove('selected'));c.classList.add('selected')}));
+document.querySelectorAll('.voice').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('.voice').forEach(x=>x.classList.remove('selected'));c.classList.add('selected');toast('Voice selected for preview')}));
+document.querySelectorAll('.art-choice,.caption-choice').forEach(c=>c.addEventListener('click',()=>{c.parentElement.querySelectorAll('.art-choice,.caption-choice').forEach(x=>x.classList.remove('selected'));c.classList.add('selected')}));
+document.querySelectorAll('.day').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('active')));
+document.querySelectorAll('.connect').forEach(c=>c.addEventListener('click',()=>{if(c.classList.contains('connected')){c.classList.remove('connected');c.textContent='Connect'}else{c.classList.add('connected');c.textContent='Demo connected';toast('Demo only — no social account was connected')}}));
+function makeSummary(){const niche=document.querySelector('.grid.single .selected strong')?.textContent||'Custom niche';const custom=document.getElementById('customNiche').value.trim();const series=document.getElementById('seriesName').value.trim()||'Untitled series';const time=document.querySelector('input[type=time]').value;const days=[...document.querySelectorAll('.day.active')].map(x=>x.textContent).join(', ')||'No days selected';const voice=document.querySelector('.voice.selected strong')?.textContent||'Default voice';document.getElementById('summary').innerHTML=`<b>Series:</b> ${series}<br><b>Content:</b> ${custom||niche}<br><b>Voice:</b> ${voice}<br><b>Publishing:</b> ${days} at ${time}<br><b>Channels:</b> ${[...document.querySelectorAll('.connect.connected')].map(x=>x.parentElement.querySelector('strong').textContent).join(', ')||'Not connected yet'}`;}
+</script>
+</body></html>

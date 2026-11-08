@@ -1,74 +1,22 @@
+# RedPit — complete starter source
 
-# RedPit — Self-hosted AI Video Studio
+This repository combines the RedPit Flask backend with the redesigned responsive creator-studio onboarding UI.
 
-RedPit is a lightweight, self-hostable faceless-video production workspace. It includes account registration/login, project management, an offline script starter, scene editing, image/audio uploads, and MP4 rendering through FFmpeg.
+## Run locally
 
-## Important feature notes
-
-- The script starter uses local templates. It is **not** a full AI language model.
-- Voiceovers are uploaded audio files. Text-to-speech is not bundled into this first release.
-- Scene visuals can be uploaded, or RedPit creates branded title cards.
-- Video rendering requires FFmpeg installed on the machine running RedPit.
-- Social publishing is manual: download the MP4 and upload it to your platform.
-- No paid API keys are required. No external AI API is called.
-
-## Run locally (Windows 10)
-
-1. Install Python 3.10 or newer from https://www.python.org/downloads/ and enable **Add Python to PATH**.
-2. Install FFmpeg from https://ffmpeg.org/download.html and add its `bin` folder to PATH.
-3. Open Command Prompt in this project folder.
-4. Run:
-
-```bash
-py -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-py app.py
-```
-
-5. Open http://127.0.0.1:5000
-
-For low-RAM computers, close other applications before rendering. Use a small number of scenes and modest image file sizes.
-
-## Run on Termux (Android)
-
-Termux can run the web app for development/testing, though rendering on a phone may be slow.
-
-```bash
-pkg update
-pkg install python git ffmpeg
-pip install -r requirements.txt
-python app.py
-```
-
-Open http://127.0.0.1:5000 in your phone browser.
+Python 3.10+ is required. Install dependencies with `pip install -r requirements.txt`, then run `python app.py`.
 
 ## Deploy on Render
 
-This repo includes `render.yaml` and `Procfile` for a basic deployment. Connect your GitHub repository to Render and deploy the web service.
+The included `render.yaml` defines the Flask web service. The app uses Gunicorn (`gunicorn app:app --workers 1 --threads 4 --timeout 120`). Set `REDPIT_SECRET` to a long random secret. Attach a persistent disk and configure the app's database/uploads/renders paths for durable user data before production use.
 
-**Free-hosting limitations:** free web services may sleep, have limited CPU/RAM, and may use ephemeral storage. The SQLite database, uploads and rendered files in this starter are stored locally, so they may not persist across redeploys or instance restarts on hosts with ephemeral disks. For reliable long-term production, use a persistent disk or host RedPit on your own PC/server. A free public web host is not guaranteed to support FFmpeg rendering.
+## Current capabilities and limitations
 
-## Security before public production
+- Flask registration/login and SQLite-backed project/scene endpoints.
+- Offline template-based script starter.
+- FFmpeg-based vertical video rendering from uploaded images or generated text title cards, with uploaded audio/music when supplied.
+- Redesigned RedPit onboarding interface.
 
-- Set a long, random `REDPIT_SECRET` environment variable.
-- Use HTTPS through your hosting provider.
-- Add rate limiting, CSRF protection, password reset, email verification, backups, and persistent storage before opening public registration to strangers.
-- Do not expose a development server directly to the public internet.
+The onboarding's social-account connection and scheduled-publishing screens are UI demonstrations, not live OAuth or publishing integrations. The offline script starter is not an AI language model. The renderer does not generate AI images or natural-sounding narration; FFmpeg must be installed on the host for MP4 rendering. The current onboarding form is not yet wired to save its settings as a series through the backend.
 
-## GitHub
-
-After creating your empty GitHub repository, from this project folder:
-
-```bash
-git init
-git add .
-git commit -m "Initial RedPit release"
-git branch -M main
-git remote add origin YOUR_GITHUB_REPOSITORY_URL
-git push -u origin main
-```
-
-## Current release
-
-This is a functional first foundation, not a claim of feature parity with commercial faceless-video platforms. The next releases can add local TTS, optional local LLM integration, subtitle timing, richer transitions, and publishing integrations without paid AI API keys.
+Before public production use, add CSRF protection, rate limiting, stronger session configuration, persistent storage, and validate uploads. Do not use the default Flask secret in production.

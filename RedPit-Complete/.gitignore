@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+redpit.db
+uploads/*
+!uploads/.gitkeep
+renders/*
+!renders/.gitkeep
