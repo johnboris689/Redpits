@@ -1,87 +1,74 @@
-# RedPits — Self-Hosted AI Creative Studio
 
-RedPits is a real AI creative web application designed around a **self-hosted GPU AI engine**. The web application and GPU inference service are separate so the same RedPits software can move from a free GPU test environment to rented GPU infrastructure and eventually to a physical NVIDIA GPU server.
+# RedPit — Self-hosted AI Video Studio
 
-## What is self-hosted
+RedPit is a lightweight, self-hostable faceless-video production workspace. It includes account registration/login, project management, an offline script starter, scene editing, image/audio uploads, and MP4 rendering through FFmpeg.
 
-RedPits does not use Gemini, Veo, Replicate, Hugging Face Spaces, or another company's AI-generation API for production inference.
+## Important feature notes
 
-Open-source model weights may be downloaded during setup. Inference happens locally on the RedPits AI machine.
+- The script starter uses local templates. It is **not** a full AI language model.
+- Voiceovers are uploaded audio files. Text-to-speech is not bundled into this first release.
+- Scene visuals can be uploaded, or RedPit creates branded title cards.
+- Video rendering requires FFmpeg installed on the machine running RedPit.
+- Social publishing is manual: download the MP4 and upload it to your platform.
+- No paid API keys are required. No external AI API is called.
 
-The first local engines are:
+## Run locally (Windows 10)
 
-- **LTX-Video 2B distilled** for text-to-video and image-to-video.
-- **SDXL Turbo** for local text-to-image.
-- **Local background removal** for transparent sticker output.
-- **FFmpeg** for movie assembly and media processing.
-
-The LTX-Video project documents local inference and lists its 2B distilled model as the lighter model for lower VRAM environments. citeturn2search1turn2search2 SDXL Turbo is loaded locally through Diffusers; it is not called as a hosted inference API.
-
-## Architecture
-
-```text
-User
-  ↓
-RedPits Web/API
-  ↓
-RedPits Job Queue
-  ↓
-Private AI Engine API
-  ↓
-NVIDIA GPU
-  ├── Local video model
-  ├── Local image model
-  ├── Local sticker processing
-  └── FFmpeg
-  ↓
-Local/Object Storage
-```
-
-## Services
-
-### Web service
+1. Install Python 3.10 or newer from https://www.python.org/downloads/ and enable **Add Python to PATH**.
+2. Install FFmpeg from https://ffmpeg.org/download.html and add its `bin` folder to PATH.
+3. Open Command Prompt in this project folder.
+4. Run:
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+py -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+py app.py
 ```
 
-### GPU AI service
+5. Open http://127.0.0.1:5000
+
+For low-RAM computers, close other applications before rendering. Use a small number of scenes and modest image file sizes.
+
+## Run on Termux (Android)
+
+Termux can run the web app for development/testing, though rendering on a phone may be slow.
 
 ```bash
-uvicorn ai_engine.main:app --host 0.0.0.0 --port 8100
+pkg update
+pkg install python git ffmpeg
+pip install -r requirements.txt
+python app.py
 ```
 
-The AI service exposes authenticated internal endpoints for health, model discovery, uploads, jobs, cancellation and output retrieval.
+Open http://127.0.0.1:5000 in your phone browser.
 
-## GPU setup
+## Deploy on Render
 
-See:
+This repo includes `render.yaml` and `Procfile` for a basic deployment. Connect your GitHub repository to Render and deploy the web service.
 
-- `SELF_HOSTED_AI.md`
-- `GPU_SETUP.md`
-- `MODEL_SETUP.md`
-- `DEPLOYMENT.md`
+**Free-hosting limitations:** free web services may sleep, have limited CPU/RAM, and may use ephemeral storage. The SQLite database, uploads and rendered files in this starter are stored locally, so they may not persist across redeploys or instance restarts on hosts with ephemeral disks. For reliable long-term production, use a persistent disk or host RedPit on your own PC/server. A free public web host is not guaranteed to support FFmpeg rendering.
 
-The AI setup script installs the official LTX-Video local inference package. LTX's official repository documents `pip install -e .[inference]`, local `inference.py`, image conditioning, and the 2B distilled configuration. citeturn2search0turn2search1
+## Security before public production
 
-## Free GPU testing
+- Set a long, random `REDPIT_SECRET` environment variable.
+- Use HTTPS through your hosting provider.
+- Add rate limiting, CSRF protection, password reset, email verification, backups, and persistent storage before opening public registration to strangers.
+- Do not expose a development server directly to the public internet.
 
-The code is provider-independent. A free GPU environment can be used only as the first compute host for testing. It is not treated as part of the RedPits application or as an AI API dependency.
+## GitHub
 
-If the free environment has no compatible NVIDIA GPU, RedPits reports that the AI GPU engine is unavailable instead of returning fake media.
+After creating your empty GitHub repository, from this project folder:
 
-## Moving to a paid or physical GPU
-
-Change the AI engine host/configuration only. The web application and API contract remain the same.
-
-```text
-Free GPU test
-     ↓
-Rented GPU server
-     ↓
-Physical NVIDIA GPU server
+```bash
+git init
+git add .
+git commit -m "Initial RedPit release"
+git branch -M main
+git remote add origin YOUR_GITHUB_REPOSITORY_URL
+git push -u origin main
 ```
 
-## Important
+## Current release
 
-Free GPU compute is not unlimited. The self-hosted architecture removes AI API billing/dependency, but the hardware used for inference still has a real compute cost unless you have access to free hardware.
+This is a functional first foundation, not a claim of feature parity with commercial faceless-video platforms. The next releases can add local TTS, optional local LLM integration, subtitle timing, richer transitions, and publishing integrations without paid AI API keys.
