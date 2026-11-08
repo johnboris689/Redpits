@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: redpit
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
